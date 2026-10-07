@@ -1,4 +1,4 @@
-import { LuNotebookPen } from "react-icons/lu";
+import { LuNotebookPen, LuRotateCcw } from "react-icons/lu";
 import { paletteOptions } from "../../data/palettes.js";
 import styles from "./styles.module.css";
 
@@ -10,6 +10,7 @@ const BoardControls = ({
     onMoodChange,
     onPaletteChange,
     onAddNote,
+    onRequestReset,
 }) => (
     <section className={styles.boardControls} aria-labelledby="controls-title">
         <div className={styles.controlsHeading}>
@@ -97,8 +98,13 @@ const BoardControls = ({
             Add a note
         </button>
 
+        <button className={styles.resetButton} type="button" onClick={onRequestReset}>
+            <LuRotateCcw aria-hidden="true" />
+            Start a new board
+        </button>
+
         <p className={styles.storageHint}>
-            Your working board saves in this browser as you edit.
+            Your working draft saves in this browser when local storage is available.
         </p>
     </section>
 );
