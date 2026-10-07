@@ -15,7 +15,11 @@ const formatSavedDate = (savedAt) => {
 };
 
 const SavedBoards = ({ items, onRestore, onRequestRemove, onSaveCurrent }) => (
-    <section className={styles.savedBoards} id="saved" aria-labelledby="saved-title">
+    <section
+        className={styles.savedBoards}
+        id="saved"
+        aria-labelledby="saved-title"
+    >
         <div className={styles.savedHeading}>
             <div>
                 <h2 id="saved-title">Saved boards</h2>
@@ -28,7 +32,9 @@ const SavedBoards = ({ items, onRestore, onRequestRemove, onSaveCurrent }) => (
             <div className={styles.savedGrid}>
                 {items.map((item) => {
                     const palette = getPaletteById(item.paletteId);
-                    const firstImage = item.items.find((piece) => piece.type === "image");
+                    const firstImage = item.items.find(
+                        (piece) => piece.type === "image",
+                    );
                     const preview = firstImage
                         ? getInspirationById(firstImage.inspirationId)
                         : null;
@@ -45,19 +51,25 @@ const SavedBoards = ({ items, onRestore, onRequestRemove, onSaveCurrent }) => (
                                 ) : (
                                     <span
                                         className={styles.emptyPreview}
-                                        style={{ backgroundColor: palette.accentSoft }}
+                                        style={{
+                                            backgroundColor: palette.accentSoft,
+                                        }}
                                     >
                                         <LuBookmark aria-hidden="true" />
                                     </span>
                                 )}
-                                <span className={styles.moodLabel}>{item.mood}</span>
+                                <span className={styles.moodLabel}>
+                                    {item.mood}
+                                </span>
                             </div>
                             <div className={styles.savedBody}>
                                 <div className={styles.savedTitleRow}>
                                     <h3>{item.title || "Untitled board"}</h3>
                                     <span
                                         className={styles.paletteDot}
-                                        style={{ backgroundColor: palette.accent }}
+                                        style={{
+                                            backgroundColor: palette.accent,
+                                        }}
                                         aria-label={`${palette.name} color story`}
                                         title={palette.name}
                                     />
@@ -94,7 +106,10 @@ const SavedBoards = ({ items, onRestore, onRequestRemove, onSaveCurrent }) => (
             <div className={styles.emptySaved}>
                 <LuBookmark aria-hidden="true" />
                 <h3>No snapshots yet</h3>
-                <p>Save the current direction when you want to compare it later.</p>
+                <p>
+                    Save the current direction when you want to compare it
+                    later.
+                </p>
                 <button type="button" onClick={onSaveCurrent}>
                     Save this board
                 </button>

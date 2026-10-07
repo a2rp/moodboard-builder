@@ -21,15 +21,22 @@ const MoodboardCanvas = ({
     const noteCount = board.items.filter((item) => item.type === "note").length;
 
     return (
-        <section className={styles.moodboardCanvas} aria-labelledby="canvas-title">
+        <section
+            className={styles.moodboardCanvas}
+            aria-labelledby="canvas-title"
+        >
             <div className={styles.canvasHeading}>
                 <div>
                     <h2 id="canvas-title">Your canvas</h2>
-                    <p>Gather the references that make the direction feel clear.</p>
+                    <p>
+                        Gather the references that make the direction feel
+                        clear.
+                    </p>
                 </div>
                 <div className={styles.canvasActions}>
                     <span className={styles.pieceCount}>
-                        {board.items.length} {board.items.length === 1 ? "piece" : "pieces"}
+                        {board.items.length}{" "}
+                        {board.items.length === 1 ? "piece" : "pieces"}
                     </span>
                     <button type="button" onClick={onAddNote}>
                         <LuNotebookPen aria-hidden="true" />
@@ -39,7 +46,11 @@ const MoodboardCanvas = ({
                         <LuBookmark aria-hidden="true" />
                         Save snapshot
                     </button>
-                    <button className={styles.downloadButton} type="button" onClick={onDownload}>
+                    <button
+                        className={styles.downloadButton}
+                        type="button"
+                        onClick={onDownload}
+                    >
                         <LuDownload aria-hidden="true" />
                         Export board
                     </button>
@@ -69,7 +80,10 @@ const MoodboardCanvas = ({
                             <span>{board.mood} direction</span>
                         </div>
                     </div>
-                    <div className={styles.colorStory} aria-label={`${palette.name} color story`}>
+                    <div
+                        className={styles.colorStory}
+                        aria-label={`${palette.name} color story`}
+                    >
                         <span style={{ backgroundColor: palette.accent }} />
                         <span style={{ backgroundColor: palette.sage }} />
                         <span style={{ backgroundColor: palette.paper }} />
@@ -82,7 +96,9 @@ const MoodboardCanvas = ({
                         {board.items.map((item, index) => {
                             const noteNumber = board.items
                                 .slice(0, index + 1)
-                                .filter((piece) => piece.type === "note").length;
+                                .filter(
+                                    (piece) => piece.type === "note",
+                                ).length;
 
                             return (
                                 <BoardCard
@@ -102,7 +118,10 @@ const MoodboardCanvas = ({
                     <div className={styles.emptyCanvas}>
                         <LuImagePlus aria-hidden="true" />
                         <h3>Start collecting</h3>
-                        <p>Add a note here or choose a reference from the library below.</p>
+                        <p>
+                            Add a note here or choose a reference from the
+                            library below.
+                        </p>
                         <button type="button" onClick={onAddNote}>
                             Add your first note
                         </button>
@@ -110,7 +129,10 @@ const MoodboardCanvas = ({
                 )}
 
                 <div className={styles.canvasFooter}>
-                    <span>{noteCount} {noteCount === 1 ? "note" : "notes"} in this direction</span>
+                    <span>
+                        {noteCount} {noteCount === 1 ? "note" : "notes"} in this
+                        direction
+                    </span>
                     <span>Draft stays on this device</span>
                 </div>
             </div>

@@ -44,7 +44,9 @@
         border: 1px solid var(--border);
         border-radius: 9px;
         background: var(--paper);
-        transition: border-color 150ms ease, box-shadow 150ms ease;
+        transition:
+            border-color 150ms ease,
+            box-shadow 150ms ease;
 
         &:hover,
         &:focus-within {

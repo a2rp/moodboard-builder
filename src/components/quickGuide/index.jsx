@@ -23,7 +23,11 @@ const guideSteps = [
 ];
 
 const QuickGuide = () => (
-    <section className={styles.quickGuide} id="guide" aria-labelledby="guide-title">
+    <section
+        className={styles.quickGuide}
+        id="guide"
+        aria-labelledby="guide-title"
+    >
         <div className={styles.guideHeading}>
             <div>
                 <h2 id="guide-title">Build in three moves</h2>

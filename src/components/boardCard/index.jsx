@@ -13,12 +13,16 @@ const BoardCard = ({
 }) => {
     const inspiration =
         item.type === "image" ? getInspirationById(item.inspirationId) : null;
-    const label = item.type === "note" ? `note ${noteNumber}` : inspiration?.title;
+    const label =
+        item.type === "note" ? `note ${noteNumber}` : inspiration?.title;
     const itemLayout = styles[item.size] ?? styles.small;
 
     return (
         <article className={`${styles.boardCard} ${itemLayout}`}>
-            <div className={styles.cardActions} aria-label={`Actions for ${label}`}>
+            <div
+                className={styles.cardActions}
+                aria-label={`Actions for ${label}`}
+            >
                 <button
                     type="button"
                     aria-label={`Move ${label} earlier`}
@@ -67,7 +71,10 @@ const BoardCard = ({
                         <LuImage aria-hidden="true" />
                         Note {noteNumber}
                     </span>
-                    <label className={styles.visuallyHidden} htmlFor={`note-${item.id}`}>
+                    <label
+                        className={styles.visuallyHidden}
+                        htmlFor={`note-${item.id}`}
+                    >
                         Edit note {noteNumber}
                     </label>
                     <textarea
@@ -75,9 +82,13 @@ const BoardCard = ({
                         value={item.text}
                         maxLength={180}
                         rows={5}
-                        onChange={(event) => onNoteChange(item.id, event.target.value)}
+                        onChange={(event) =>
+                            onNoteChange(item.id, event.target.value)
+                        }
                     />
-                    <span className={styles.noteLength}>{item.text.length}/180</span>
+                    <span className={styles.noteLength}>
+                        {item.text.length}/180
+                    </span>
                 </div>
             )}
         </article>

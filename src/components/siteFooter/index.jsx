@@ -4,13 +4,7 @@ import {
     FaLinkedinIn,
     FaYoutube,
 } from "react-icons/fa6";
-import {
-    LuCoffee,
-    LuCode,
-    LuGlobe,
-    LuHeart,
-    LuMail,
-} from "react-icons/lu";
+import { LuCoffee, LuCode, LuGlobe, LuHeart, LuMail } from "react-icons/lu";
 import styles from "./styles.module.css";
 
 const footerLinks = [
@@ -83,13 +77,22 @@ const SiteFooter = () => (
                     . All rights reserved.
                 </p>
             </div>
-            <nav className={styles.footerLinks} aria-label="Profile and support links">
+            <nav
+                className={styles.footerLinks}
+                aria-label="Profile and support links"
+            >
                 {footerLinks.map(({ label, href, icon: Icon }) => (
                     <a
                         href={href}
                         key={label}
-                        target={href.startsWith("mailto:") ? undefined : "_blank"}
-                        rel={href.startsWith("mailto:") ? undefined : "noreferrer"}
+                        target={
+                            href.startsWith("mailto:") ? undefined : "_blank"
+                        }
+                        rel={
+                            href.startsWith("mailto:")
+                                ? undefined
+                                : "noreferrer"
+                        }
                     >
                         <Icon aria-hidden="true" />
                         {label}

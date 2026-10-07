@@ -1,3 +1,5 @@
+![Project screenshot](./screenshot.png)
+
 # Moodboard Builder
 
 Moodboard Builder is a small visual workspace for collecting references and shaping a creative direction. Set a brief and color story, browse a curated photo library, arrange images and notes on a canvas, then save a snapshot or export a JSON summary.

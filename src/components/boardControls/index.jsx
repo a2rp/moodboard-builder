@@ -51,10 +51,18 @@ const BoardControls = ({
 
         <div className={styles.optionGroup}>
             <h3>Feeling</h3>
-            <div className={styles.moodOptions} role="group" aria-label="Board feeling">
+            <div
+                className={styles.moodOptions}
+                role="group"
+                aria-label="Board feeling"
+            >
                 {moodOptions.map((mood) => (
                     <button
-                        className={board.mood === mood ? styles.moodActive : styles.moodButton}
+                        className={
+                            board.mood === mood
+                                ? styles.moodActive
+                                : styles.moodButton
+                        }
                         key={mood}
                         type="button"
                         aria-pressed={board.mood === mood}
@@ -69,7 +77,11 @@ const BoardControls = ({
 
         <div className={styles.optionGroup}>
             <h3>Color story</h3>
-            <div className={styles.paletteOptions} role="group" aria-label="Board color story">
+            <div
+                className={styles.paletteOptions}
+                role="group"
+                aria-label="Board color story"
+            >
                 {paletteOptions.map((palette) => (
                     <button
                         className={
@@ -82,10 +94,15 @@ const BoardControls = ({
                         aria-pressed={board.paletteId === palette.id}
                         onClick={() => onPaletteChange(palette.id)}
                     >
-                        <span className={styles.paletteColors} aria-hidden="true">
+                        <span
+                            className={styles.paletteColors}
+                            aria-hidden="true"
+                        >
                             <span style={{ backgroundColor: palette.accent }} />
                             <span style={{ backgroundColor: palette.sage }} />
-                            <span style={{ backgroundColor: palette.background }} />
+                            <span
+                                style={{ backgroundColor: palette.background }}
+                            />
                         </span>
                         <span>{palette.name}</span>
                     </button>
@@ -93,18 +110,27 @@ const BoardControls = ({
             </div>
         </div>
 
-        <button className={styles.addNoteButton} type="button" onClick={onAddNote}>
+        <button
+            className={styles.addNoteButton}
+            type="button"
+            onClick={onAddNote}
+        >
             <LuNotebookPen aria-hidden="true" />
             Add a note
         </button>
 
-        <button className={styles.resetButton} type="button" onClick={onRequestReset}>
+        <button
+            className={styles.resetButton}
+            type="button"
+            onClick={onRequestReset}
+        >
             <LuRotateCcw aria-hidden="true" />
             Start a new board
         </button>
 
         <p className={styles.storageHint}>
-            Your working draft saves in this browser when local storage is available.
+            Your working draft saves in this browser when local storage is
+            available.
         </p>
     </section>
 );

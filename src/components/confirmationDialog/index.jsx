@@ -28,8 +28,11 @@ const ConfirmationDialog = ({
             }
 
             if (event.key === "Tab") {
-                const dialog = event.currentTarget.querySelector("[role='dialog']");
-                const focusable = dialog?.querySelectorAll("button:not(:disabled)");
+                const dialog =
+                    event.currentTarget.querySelector("[role='dialog']");
+                const focusable = dialog?.querySelectorAll(
+                    "button:not(:disabled)",
+                );
                 const first = focusable?.[0];
                 const last = focusable?.[focusable.length - 1];
 

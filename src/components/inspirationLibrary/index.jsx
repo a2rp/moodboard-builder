@@ -22,7 +22,8 @@ const InspirationLibrary = ({
                 <p>Pick a reference to add it to the canvas.</p>
             </div>
             <span className={styles.resultCount}>
-                {inspirations.length} {inspirations.length === 1 ? "reference" : "references"}
+                {inspirations.length}{" "}
+                {inspirations.length === 1 ? "reference" : "references"}
             </span>
         </div>
 
@@ -76,7 +77,9 @@ const InspirationLibrary = ({
                                     alt={item.alt}
                                     loading="lazy"
                                 />
-                                <span className={styles.categoryTag}>{item.category}</span>
+                                <span className={styles.categoryTag}>
+                                    {item.category}
+                                </span>
                             </div>
                             <div className={styles.referenceDetails}>
                                 <div>
@@ -84,7 +87,11 @@ const InspirationLibrary = ({
                                     <p>{item.mood}</p>
                                 </div>
                                 <button
-                                    className={isAdded ? styles.addedButton : styles.addButton}
+                                    className={
+                                        isAdded
+                                            ? styles.addedButton
+                                            : styles.addButton
+                                    }
                                     type="button"
                                     aria-label={
                                         isAdded

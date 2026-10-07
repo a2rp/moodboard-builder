@@ -59,17 +59,14 @@ const SiteHeader = ({ savedCount = 0 }) => {
                     aria-label="Main navigation"
                 >
                     {navigation.map((item) => (
-                        <a
-                            key={item.href}
-                            href={item.href}
-                            onClick={closeMenu}
-                        >
+                        <a key={item.href} href={item.href} onClick={closeMenu}>
                             {item.label}
-                            {item.label === "Saved boards" && savedCount > 0 && (
-                                <span className={styles.savedCount}>
-                                    {savedCount}
-                                </span>
-                            )}
+                            {item.label === "Saved boards" &&
+                                savedCount > 0 && (
+                                    <span className={styles.savedCount}>
+                                        {savedCount}
+                                    </span>
+                                )}
                         </a>
                     ))}
                 </nav>
@@ -88,12 +85,18 @@ const SiteHeader = ({ savedCount = 0 }) => {
                     <button
                         className={styles.menuButton}
                         type="button"
-                        aria-label={menuOpen ? "Close navigation" : "Open navigation"}
+                        aria-label={
+                            menuOpen ? "Close navigation" : "Open navigation"
+                        }
                         aria-expanded={menuOpen}
                         aria-controls="main-navigation"
                         onClick={() => setMenuOpen((open) => !open)}
                     >
-                        {menuOpen ? <LuX aria-hidden="true" /> : <LuMenu aria-hidden="true" />}
+                        {menuOpen ? (
+                            <LuX aria-hidden="true" />
+                        ) : (
+                            <LuMenu aria-hidden="true" />
+                        )}
                     </button>
                 </div>
             </div>

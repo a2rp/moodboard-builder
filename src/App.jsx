@@ -41,11 +41,12 @@ const isValidBoardItem = (item) => {
 
 const normalizeBoardItem = (item) => ({
     ...item,
-    size: item.type === "note"
-        ? "note"
-        : itemSizes.includes(item.size)
-          ? item.size
-          : "small",
+    size:
+        item.type === "note"
+            ? "note"
+            : itemSizes.includes(item.size)
+              ? item.size
+              : "small",
     text: item.type === "note" ? item.text.slice(0, 180) : item.text,
 });
 
@@ -75,10 +76,20 @@ const readWorkingBoard = () => {
         return {
             ...initialBoard,
             ...savedBoard,
-            title: typeof savedBoard.title === "string" ? savedBoard.title.slice(0, 48) : initialBoard.title,
-            brief: typeof savedBoard.brief === "string" ? savedBoard.brief.slice(0, 180) : initialBoard.brief,
-            mood: moodOptions.includes(savedBoard.mood) ? savedBoard.mood : initialBoard.mood,
-            paletteId: paletteOptions.some((item) => item.id === savedBoard.paletteId)
+            title:
+                typeof savedBoard.title === "string"
+                    ? savedBoard.title.slice(0, 48)
+                    : initialBoard.title,
+            brief:
+                typeof savedBoard.brief === "string"
+                    ? savedBoard.brief.slice(0, 180)
+                    : initialBoard.brief,
+            mood: moodOptions.includes(savedBoard.mood)
+                ? savedBoard.mood
+                : initialBoard.mood,
+            paletteId: paletteOptions.some(
+                (item) => item.id === savedBoard.paletteId,
+            )
                 ? savedBoard.paletteId
                 : initialBoard.paletteId,
             items: validItems,
@@ -107,9 +118,16 @@ const readSavedBoards = () => {
             .map((item) => ({
                 ...item,
                 title: item.title.slice(0, 48),
-                brief: typeof item.brief === "string" ? item.brief.slice(0, 180) : "",
-                mood: moodOptions.includes(item.mood) ? item.mood : initialBoard.mood,
-                paletteId: paletteOptions.some((palette) => palette.id === item.paletteId)
+                brief:
+                    typeof item.brief === "string"
+                        ? item.brief.slice(0, 180)
+                        : "",
+                mood: moodOptions.includes(item.mood)
+                    ? item.mood
+                    : initialBoard.mood,
+                paletteId: paletteOptions.some(
+                    (palette) => palette.id === item.paletteId,
+                )
                     ? item.paletteId
                     : initialBoard.paletteId,
                 items: item.items
@@ -134,11 +152,19 @@ const App = () => {
     const filteredInspirations = inspirations.filter((item) => {
         const matchesCategory =
             category === categoryOptions[0] || item.category === category;
-        const searchContent = [item.title, item.category, item.mood, ...item.keywords]
+        const searchContent = [
+            item.title,
+            item.category,
+            item.mood,
+            ...item.keywords,
+        ]
             .join(" ")
             .toLowerCase();
 
-        return matchesCategory && (!searchWords || searchContent.includes(searchWords));
+        return (
+            matchesCategory &&
+            (!searchWords || searchContent.includes(searchWords))
+        );
     });
     const addedIds = new Set(
         board.items
@@ -225,10 +251,16 @@ const App = () => {
 
     const handleMoveItem = (itemId, direction) => {
         setBoard((currentBoard) => {
-            const fromIndex = currentBoard.items.findIndex((item) => item.id === itemId);
+            const fromIndex = currentBoard.items.findIndex(
+                (item) => item.id === itemId,
+            );
             const toIndex = fromIndex + direction;
 
-            if (fromIndex < 0 || toIndex < 0 || toIndex >= currentBoard.items.length) {
+            if (
+                fromIndex < 0 ||
+                toIndex < 0 ||
+                toIndex >= currentBoard.items.length
+            ) {
                 return currentBoard;
             }
 
@@ -246,8 +278,12 @@ const App = () => {
 
     const handleRequestRemove = (item) => {
         const inspiration =
-            item.type === "image" ? getInspirationById(item.inspirationId) : null;
-        const itemIndex = board.items.findIndex((piece) => piece.id === item.id);
+            item.type === "image"
+                ? getInspirationById(item.inspirationId)
+                : null;
+        const itemIndex = board.items.findIndex(
+            (piece) => piece.id === item.id,
+        );
         const noteNumber = board.items
             .slice(0, itemIndex + 1)
             .filter((piece) => piece.type === "note").length;
@@ -272,7 +308,9 @@ const App = () => {
         };
 
         setSavedBoards((currentBoards) => [snapshot, ...currentBoards]);
-        setSaveMessage(`Saved "${board.title || "Untitled board"}" to this device.`);
+        setSaveMessage(
+            `Saved "${board.title || "Untitled board"}" to this device.`,
+        );
     };
 
     const handleRestoreBoard = (savedBoard) => {
@@ -284,7 +322,9 @@ const App = () => {
             items: savedBoard.items.map((item) => ({ ...item })),
         });
         setSaveMessage(`Restored "${savedBoard.title || "Untitled board"}".`);
-        document.getElementById("board")?.scrollIntoView({ behavior: "smooth" });
+        document
+            .getElementById("board")
+            ?.scrollIntoView({ behavior: "smooth" });
     };
 
     const handleRequestRemoveSaved = (savedBoard) => {
@@ -316,7 +356,9 @@ const App = () => {
             }));
         } else if (confirmation.type === "remove-saved") {
             setSavedBoards((currentBoards) =>
-                currentBoards.filter((item) => item.id !== confirmation.savedId),
+                currentBoards.filter(
+                    (item) => item.id !== confirmation.savedId,
+                ),
             );
         }
 
@@ -351,8 +393,10 @@ const App = () => {
         const fileUrl = URL.createObjectURL(file);
         const link = document.createElement("a");
         const fileName =
-            board.title.trim().replace(/[^a-z0-9]+/gi, "-").toLowerCase() ||
-            "moodboard";
+            board.title
+                .trim()
+                .replace(/[^a-z0-9]+/gi, "-")
+                .toLowerCase() || "moodboard";
 
         link.href = fileUrl;
         link.download = `${fileName}-board.json`;
@@ -411,10 +455,13 @@ const App = () => {
                 <main className={styles.workspace} id="board">
                     <section className={styles.workspaceHeading}>
                         <div>
-                            <p className={styles.sectionLabel}>Visual direction</p>
+                            <p className={styles.sectionLabel}>
+                                Visual direction
+                            </p>
                             <h1>{board.title || "Untitled board"}</h1>
                             <p className={styles.workspaceDescription}>
-                                {board.brief || "Your board is ready for its first reference."}
+                                {board.brief ||
+                                    "Your board is ready for its first reference."}
                             </p>
                         </div>
                         <span className={styles.moodBadge}>{board.mood}</span>

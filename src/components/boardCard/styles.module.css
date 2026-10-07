@@ -7,7 +7,9 @@
     border-radius: 8px;
     background: var(--canvas-paper);
     box-shadow: 0 2px 5px rgb(28 41 35 / 6%);
-    transition: border-color 150ms ease, box-shadow 150ms ease;
+    transition:
+        border-color 150ms ease,
+        box-shadow 150ms ease;
 
     &:hover,
     &:focus-within {
@@ -97,7 +99,9 @@
             border-radius: 5px;
             background: transparent;
             color: var(--ink);
-            transition: border-color 140ms ease, box-shadow 140ms ease;
+            transition:
+                border-color 140ms ease,
+                box-shadow 140ms ease;
 
             svg {
                 width: 14px;
