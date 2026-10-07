@@ -1,0 +1,93 @@
+.quickGuide {
+    margin-bottom: 24px;
+    scroll-margin-top: 98px;
+
+    .guideHeading {
+        display: flex;
+        margin-bottom: 16px;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 14px;
+
+        h2 {
+            font-family: var(--font-serif);
+            font-size: 25px;
+            letter-spacing: -0.035em;
+        }
+
+        p {
+            margin-top: 4px;
+            color: var(--ink-muted);
+            font-size: 12px;
+        }
+
+        > span {
+            color: var(--accent-dark);
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 700;
+        }
+    }
+
+    .guideSteps {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .guideStep {
+        display: flex;
+        min-height: 150px;
+        padding: 15px;
+        flex-direction: column;
+        justify-content: space-between;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: var(--paper);
+        transition: border-color 150ms ease, box-shadow 150ms ease;
+
+        &:hover,
+        &:focus-within {
+            border-color: var(--sage);
+            box-shadow: 0 5px 16px rgb(37 47 40 / 7%);
+        }
+
+        h3 {
+            font-family: var(--font-serif);
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        p {
+            margin-top: 5px;
+            color: var(--ink-muted);
+            font-size: 10px;
+            line-height: 1.5;
+        }
+    }
+
+    .stepTopline {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: var(--accent-dark);
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 700;
+
+        svg {
+            width: 17px;
+            height: 17px;
+        }
+    }
+
+    @media (max-width: 750px) {
+        .guideSteps {
+            grid-template-columns: 1fr;
+        }
+
+        .guideStep {
+            min-height: 128px;
+        }
+    }
+}
