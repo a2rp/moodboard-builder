@@ -1,0 +1,94 @@
+.siteFooter {
+    border-top: 1px solid var(--border);
+    background: var(--paper);
+
+    .footerInner {
+        display: flex;
+        width: min(100% - 48px, 1480px);
+        min-height: 122px;
+        margin-inline: auto;
+        padding-block: 20px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 28px;
+    }
+
+    .footerIdentity {
+        display: grid;
+        flex: 0 0 auto;
+        align-content: center;
+        justify-items: start;
+        gap: 8px;
+
+        p {
+            color: var(--ink-muted);
+            font-size: 10px;
+        }
+
+        p a {
+            color: var(--ink);
+            font-weight: 700;
+            text-decoration: underline;
+            text-decoration-color: var(--border-strong);
+            text-underline-offset: 2px;
+        }
+    }
+
+    .footerLogo {
+        display: inline-flex;
+        width: fit-content;
+        align-items: center;
+        border-radius: 5px;
+
+        img {
+            width: 112px;
+            height: auto;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 3px;
+        }
+    }
+
+    .footerLinks {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px 15px;
+
+        a {
+            display: inline-flex;
+            min-height: 29px;
+            align-items: center;
+            gap: 6px;
+            color: var(--ink-muted);
+            font-size: 10px;
+            font-weight: 650;
+            transition: color 140ms ease;
+
+            &:hover,
+            &:focus-visible {
+                color: var(--accent-dark);
+            }
+
+            svg {
+                width: 13px;
+                height: 13px;
+            }
+        }
+    }
+
+    @media (max-width: 800px) {
+        .footerInner {
+            width: min(100% - 32px, 1480px);
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .footerLinks {
+            justify-content: flex-start;
+        }
+    }
+}
