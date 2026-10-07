@@ -3,6 +3,7 @@ import BoardControls from "./components/boardControls/index.jsx";
 import ConfirmationDialog from "./components/confirmationDialog/index.jsx";
 import InspirationLibrary from "./components/inspirationLibrary/index.jsx";
 import MoodboardCanvas from "./components/moodboardCanvas/index.jsx";
+import SavedBoards from "./components/savedBoards/index.jsx";
 import SiteHeader from "./components/siteHeader/index.jsx";
 import { blankBoard, initialBoard } from "./data/boards.js";
 import {
@@ -14,6 +15,25 @@ import { getPaletteById } from "./data/palettes.js";
 import styles from "./App.module.css";
 
 const draftStorageKey = "moodboard-builder-working-board";
+const savedStorageKey = "moodboard-builder-saved-boards";
+const maxSavedBoards = 12;
+
+const isValidBoardItem = (item) => {
+    if (item.type === "note") {
+        return typeof item.id === "string" && typeof item.text === "string";
+    }
+
+    return (
+        item.type === "image" &&
+        typeof item.id === "string" &&
+        getInspirationById(item.inspirationId)
+    );
+};
+
+const copyInitialBoard = () => ({
+    ...initialBoard,
+    items: initialBoard.items.map((item) => ({ ...item })),
+});
 
 const readWorkingBoard = () => {
     try {
@@ -22,36 +42,51 @@ const readWorkingBoard = () => {
         );
 
         if (!savedBoard || !Array.isArray(savedBoard.items)) {
-            return { ...initialBoard, items: initialBoard.items.map((item) => ({ ...item })) };
+            return copyInitialBoard();
         }
 
-        const validItems = savedBoard.items.filter((item) => {
-            if (item.type === "note") {
-                return typeof item.id === "string" && typeof item.text === "string";
-            }
-
-            return (
-                item.type === "image" &&
-                typeof item.id === "string" &&
-                getInspirationById(item.inspirationId)
-            );
-        });
+        const validItems = savedBoard.items.filter(isValidBoardItem);
 
         return {
             ...initialBoard,
             ...savedBoard,
+            title: typeof savedBoard.title === "string" ? savedBoard.title : initialBoard.title,
+            brief: typeof savedBoard.brief === "string" ? savedBoard.brief : initialBoard.brief,
             items: validItems.slice(0, 40),
         };
     } catch {
-        return { ...initialBoard, items: initialBoard.items.map((item) => ({ ...item })) };
+        return copyInitialBoard();
+    }
+};
+
+const readSavedBoards = () => {
+    try {
+        const saved = JSON.parse(localStorage.getItem(savedStorageKey) || "[]");
+
+        if (!Array.isArray(saved)) {
+            return [];
+        }
+
+        return saved
+            .filter(
+                (item) =>
+                    typeof item.id === "string" &&
+                    Array.isArray(item.items) &&
+                    item.items.every(isValidBoardItem),
+            )
+            .slice(0, maxSavedBoards);
+    } catch {
+        return [];
     }
 };
 
 const App = () => {
     const [board, setBoard] = useState(readWorkingBoard);
+    const [savedBoards, setSavedBoards] = useState(readSavedBoards);
     const [confirmation, setConfirmation] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [category, setCategory] = useState(categoryOptions[0]);
+    const [saveMessage, setSaveMessage] = useState("");
     const palette = getPaletteById(board.paletteId);
     const searchWords = searchTerm.trim().toLowerCase();
     const filteredInspirations = inspirations.filter((item) => {
@@ -78,6 +113,16 @@ const App = () => {
 
         return undefined;
     }, [board]);
+
+    useEffect(() => {
+        try {
+            localStorage.setItem(savedStorageKey, JSON.stringify(savedBoards));
+        } catch {
+            return undefined;
+        }
+
+        return undefined;
+    }, [savedBoards]);
 
     const handleFieldChange = (field, value) => {
         setBoard((currentBoard) => ({ ...currentBoard, [field]: value }));
@@ -165,6 +210,40 @@ const App = () => {
         setConfirmation({ type: "remove-item", itemId: item.id, itemLabel });
     };
 
+    const handleSaveBoard = () => {
+        const snapshot = {
+            ...board,
+            id: `saved-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            savedAt: new Date().toISOString(),
+            items: board.items.map((item) => ({ ...item })),
+        };
+
+        setSavedBoards((currentBoards) =>
+            [snapshot, ...currentBoards].slice(0, maxSavedBoards),
+        );
+        setSaveMessage(`Saved "${board.title || "Untitled board"}" to this device.`);
+    };
+
+    const handleRestoreBoard = (savedBoard) => {
+        setBoard({
+            title: savedBoard.title,
+            brief: savedBoard.brief,
+            mood: savedBoard.mood,
+            paletteId: savedBoard.paletteId,
+            items: savedBoard.items.map((item) => ({ ...item })),
+        });
+        setSaveMessage(`Restored "${savedBoard.title || "Untitled board"}".`);
+        document.getElementById("board")?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    const handleRequestRemoveSaved = (savedBoard) => {
+        setConfirmation({
+            type: "remove-saved",
+            savedId: savedBoard.id,
+            itemLabel: savedBoard.title || "Untitled board",
+        });
+    };
+
     const handleCancelConfirmation = useCallback(() => {
         setConfirmation(null);
     }, []);
@@ -176,13 +255,18 @@ const App = () => {
 
         if (confirmation.type === "reset") {
             setBoard({ ...blankBoard, items: [] });
-        } else {
+            setSaveMessage("");
+        } else if (confirmation.type === "remove-item") {
             setBoard((currentBoard) => ({
                 ...currentBoard,
                 items: currentBoard.items.filter(
                     (item) => item.id !== confirmation.itemId,
                 ),
             }));
+        } else if (confirmation.type === "remove-saved") {
+            setSavedBoards((currentBoards) =>
+                currentBoards.filter((item) => item.id !== confirmation.savedId),
+            );
         }
 
         setConfirmation(null);
@@ -226,6 +310,22 @@ const App = () => {
     };
 
     const confirmationIsReset = confirmation?.type === "reset";
+    const confirmationIsSavedRemoval = confirmation?.type === "remove-saved";
+    const confirmationTitle = confirmationIsReset
+        ? "Start a new board?"
+        : confirmationIsSavedRemoval
+          ? "Remove saved snapshot?"
+          : "Remove this piece?";
+    const confirmationDescription = confirmationIsReset
+        ? "This clears the working board, including its images and notes. Saved snapshots will stay available."
+        : confirmationIsSavedRemoval
+          ? `Remove "${confirmation?.itemLabel}" from your saved boards? Your working board will stay as it is.`
+          : `Remove "${confirmation?.itemLabel}" from this board? Your saved snapshots will stay unchanged.`;
+    const confirmationLabel = confirmationIsReset
+        ? "Start new board"
+        : confirmationIsSavedRemoval
+          ? "Remove snapshot"
+          : "Remove piece";
 
     return (
         <div
@@ -242,7 +342,7 @@ const App = () => {
                 "--sage": palette.sage,
             }}
         >
-            <SiteHeader />
+            <SiteHeader savedCount={savedBoards.length} />
             <div className={styles.appFrame}>
                 <aside className={styles.inspector} aria-label="Board settings">
                     <BoardControls
@@ -274,6 +374,8 @@ const App = () => {
                         palette={palette}
                         onAddNote={handleAddNote}
                         onDownload={handleDownload}
+                        onSave={handleSaveBoard}
+                        saveMessage={saveMessage}
                         onNoteChange={handleNoteChange}
                         onMove={handleMoveItem}
                         onRequestRemove={handleRequestRemove}
@@ -289,10 +391,12 @@ const App = () => {
                         onAdd={handleAddInspiration}
                     />
 
-                    <section className={styles.placeholderSection} id="saved">
-                        <h2>Saved boards</h2>
-                        <p>Save a snapshot to return to this direction later.</p>
-                    </section>
+                    <SavedBoards
+                        items={savedBoards}
+                        onRestore={handleRestoreBoard}
+                        onRequestRemove={handleRequestRemoveSaved}
+                        onSaveCurrent={handleSaveBoard}
+                    />
 
                     <section className={styles.placeholderSection} id="guide">
                         <h2>Make a moodboard</h2>
@@ -305,17 +409,9 @@ const App = () => {
             </div>
             <ConfirmationDialog
                 isOpen={Boolean(confirmation)}
-                title={
-                    confirmationIsReset
-                        ? "Start a new board?"
-                        : "Remove this piece?"
-                }
-                description={
-                    confirmationIsReset
-                        ? "This clears the working board, including its images and notes. Saved snapshots will stay available."
-                        : `Remove “${confirmation?.itemLabel}” from this board? This will not change your saved snapshots.`
-                }
-                confirmLabel={confirmationIsReset ? "Start new board" : "Remove piece"}
+                title={confirmationTitle}
+                description={confirmationDescription}
+                confirmLabel={confirmationLabel}
                 onCancel={handleCancelConfirmation}
                 onConfirm={handleConfirm}
             />

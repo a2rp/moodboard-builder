@@ -1,0 +1,259 @@
+.savedBoards {
+    margin-bottom: 50px;
+    scroll-margin-top: 98px;
+
+    .savedHeading {
+        display: flex;
+        margin-bottom: 16px;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 15px;
+
+        h2 {
+            font-family: var(--font-serif);
+            font-size: 25px;
+            letter-spacing: -0.035em;
+        }
+
+        p {
+            margin-top: 4px;
+            color: var(--ink-muted);
+            font-size: 12px;
+        }
+    }
+
+    .savedCount {
+        padding: 5px 9px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        color: var(--ink-muted);
+        font-size: 10px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .savedGrid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .savedCard {
+        min-width: 0;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: var(--paper);
+        transition: border-color 150ms ease, box-shadow 150ms ease;
+
+        &:hover,
+        &:focus-within {
+            border-color: var(--sage);
+            box-shadow: 0 7px 20px rgb(37 47 40 / 9%);
+        }
+    }
+
+    .savedPreview {
+        position: relative;
+        height: 118px;
+        overflow: hidden;
+        background: var(--surface-muted);
+
+        > img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    .emptyPreview {
+        display: grid;
+        width: 100%;
+        height: 100%;
+        place-items: center;
+        color: var(--accent-dark);
+
+        svg {
+            width: 25px;
+            height: 25px;
+        }
+    }
+
+    .moodLabel {
+        position: absolute;
+        right: 8px;
+        bottom: 8px;
+        padding: 4px 7px;
+        border-radius: 999px;
+        background: rgb(33 44 42 / 76%);
+        color: white;
+        font-size: 9px;
+        font-weight: 700;
+    }
+
+    .savedBody {
+        padding: 11px;
+    }
+
+    .savedTitleRow {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 9px;
+
+        h3 {
+            overflow: hidden;
+            font-family: var(--font-serif);
+            font-size: 16px;
+            font-weight: 700;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    .paletteDot {
+        width: 11px;
+        height: 11px;
+        flex: 0 0 auto;
+        border: 1px solid rgb(33 44 42 / 16%);
+        border-radius: 50%;
+    }
+
+    .savedBody > p {
+        display: -webkit-box;
+        min-height: 36px;
+        margin-top: 4px;
+        overflow: hidden;
+        color: var(--ink-muted);
+        font-size: 10px;
+        line-height: 1.4;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
+
+    .savedDate {
+        display: inline-flex;
+        margin-top: 8px;
+        align-items: center;
+        gap: 5px;
+        color: var(--ink-muted);
+        font-size: 9px;
+
+        svg {
+            width: 12px;
+            height: 12px;
+        }
+    }
+
+    .savedActions {
+        display: flex;
+        margin-top: 11px;
+        align-items: center;
+        gap: 7px;
+
+        button {
+            min-height: 34px;
+            border: 1px solid var(--border-strong);
+            border-radius: 6px;
+            background: var(--surface);
+            color: var(--ink);
+            font-size: 10px;
+            font-weight: 700;
+            transition: border-color 150ms ease, box-shadow 150ms ease;
+
+            &:hover,
+            &:focus-visible {
+                border-color: var(--sage);
+                box-shadow: 0 0 0 3px rgb(69 107 92 / 10%);
+            }
+
+            svg {
+                width: 13px;
+                height: 13px;
+            }
+        }
+
+        .restoreButton {
+            display: inline-flex;
+            padding-inline: 8px;
+            flex: 1;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .removeButton {
+            display: grid;
+            width: 34px;
+            flex: 0 0 auto;
+            place-items: center;
+            color: var(--danger);
+        }
+    }
+
+    .emptySaved {
+        display: grid;
+        min-height: 220px;
+        padding: 28px;
+        justify-items: center;
+        align-content: center;
+        border: 1px dashed var(--border-strong);
+        border-radius: 10px;
+        background: var(--paper);
+        text-align: center;
+
+        > svg {
+            width: 24px;
+            height: 24px;
+            color: var(--accent);
+        }
+
+        h3 {
+            margin-top: 10px;
+            font-family: var(--font-serif);
+            font-size: 20px;
+        }
+
+        p {
+            max-width: 340px;
+            margin-top: 4px;
+            color: var(--ink-muted);
+            font-size: 11px;
+        }
+
+        button {
+            min-height: 36px;
+            margin-top: 13px;
+            padding-inline: 11px;
+            border: 1px solid var(--accent);
+            border-radius: 6px;
+            background: var(--accent);
+            color: white;
+            font-size: 10px;
+            font-weight: 750;
+
+            &:hover,
+            &:focus-visible {
+                border-color: var(--accent-dark);
+                box-shadow: 0 0 0 3px var(--accent-soft);
+            }
+        }
+    }
+
+    @media (max-width: 1000px) {
+        .savedGrid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 600px) {
+        .savedHeading {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .savedGrid {
+            grid-template-columns: 1fr;
+        }
+    }
+}

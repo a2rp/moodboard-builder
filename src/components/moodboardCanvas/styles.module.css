@@ -220,6 +220,13 @@
         font-size: 9px;
     }
 
+    .saveMessage {
+        min-height: 18px;
+        margin-top: 6px;
+        color: var(--sage);
+        font-size: 10px;
+    }
+
     @media (max-width: 900px) {
         .canvasGrid {
             grid-template-columns: repeat(8, minmax(0, 1fr));

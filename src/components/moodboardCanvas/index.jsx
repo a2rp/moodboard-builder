@@ -1,4 +1,5 @@
 import {
+    LuBookmark,
     LuDownload,
     LuImagePlus,
     LuNotebookPen,
@@ -11,6 +12,8 @@ const MoodboardCanvas = ({
     palette,
     onAddNote,
     onDownload,
+    onSave,
+    saveMessage,
     onNoteChange,
     onMove,
     onRequestRemove,
@@ -31,6 +34,10 @@ const MoodboardCanvas = ({
                     <button type="button" onClick={onAddNote}>
                         <LuNotebookPen aria-hidden="true" />
                         Add note
+                    </button>
+                    <button type="button" onClick={onSave}>
+                        <LuBookmark aria-hidden="true" />
+                        Save snapshot
                     </button>
                     <button className={styles.downloadButton} type="button" onClick={onDownload}>
                         <LuDownload aria-hidden="true" />
@@ -107,6 +114,9 @@ const MoodboardCanvas = ({
                     <span>Draft stays on this device</span>
                 </div>
             </div>
+            <p className={styles.saveMessage} role="status" aria-live="polite">
+                {saveMessage}
+            </p>
         </section>
     );
 };
