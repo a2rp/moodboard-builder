@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
+import BackToTop from "./components/backToTop/index.jsx";
 import BoardControls from "./components/boardControls/index.jsx";
 import ConfirmationDialog from "./components/confirmationDialog/index.jsx";
 import InspirationLibrary from "./components/inspirationLibrary/index.jsx";
 import MoodboardCanvas from "./components/moodboardCanvas/index.jsx";
+import QuickGuide from "./components/quickGuide/index.jsx";
 import SavedBoards from "./components/savedBoards/index.jsx";
+import SiteFooter from "./components/siteFooter/index.jsx";
 import SiteHeader from "./components/siteHeader/index.jsx";
 import { blankBoard, initialBoard } from "./data/boards.js";
 import {
@@ -11,16 +14,22 @@ import {
     getInspirationById,
     inspirations,
 } from "./data/inspirations.js";
-import { getPaletteById } from "./data/palettes.js";
+import { getPaletteById, paletteOptions } from "./data/palettes.js";
 import styles from "./App.module.css";
 
 const draftStorageKey = "moodboard-builder-working-board";
 const savedStorageKey = "moodboard-builder-saved-boards";
 const maxSavedBoards = 12;
+const moodOptions = ["Grounded", "Airy", "Collected", "Playful"];
+const itemSizes = ["large", "medium", "wide", "small", "note"];
 
 const isValidBoardItem = (item) => {
+    if (!item || typeof item !== "object" || typeof item.id !== "string") {
+        return false;
+    }
+
     if (item.type === "note") {
-        return typeof item.id === "string" && typeof item.text === "string";
+        return typeof item.text === "string";
     }
 
     return (
@@ -29,6 +38,16 @@ const isValidBoardItem = (item) => {
         getInspirationById(item.inspirationId)
     );
 };
+
+const normalizeBoardItem = (item) => ({
+    ...item,
+    size: item.type === "note"
+        ? "note"
+        : itemSizes.includes(item.size)
+          ? item.size
+          : "small",
+    text: item.type === "note" ? item.text.slice(0, 180) : item.text,
+});
 
 const copyInitialBoard = () => ({
     ...initialBoard,
@@ -41,18 +60,28 @@ const readWorkingBoard = () => {
             localStorage.getItem(draftStorageKey) || "null",
         );
 
-        if (!savedBoard || !Array.isArray(savedBoard.items)) {
+        if (
+            !savedBoard ||
+            typeof savedBoard !== "object" ||
+            !Array.isArray(savedBoard.items)
+        ) {
             return copyInitialBoard();
         }
 
-        const validItems = savedBoard.items.filter(isValidBoardItem);
+        const validItems = savedBoard.items
+            .filter(isValidBoardItem)
+            .map(normalizeBoardItem);
 
         return {
             ...initialBoard,
             ...savedBoard,
-            title: typeof savedBoard.title === "string" ? savedBoard.title : initialBoard.title,
-            brief: typeof savedBoard.brief === "string" ? savedBoard.brief : initialBoard.brief,
-            items: validItems.slice(0, 40),
+            title: typeof savedBoard.title === "string" ? savedBoard.title.slice(0, 48) : initialBoard.title,
+            brief: typeof savedBoard.brief === "string" ? savedBoard.brief.slice(0, 180) : initialBoard.brief,
+            mood: moodOptions.includes(savedBoard.mood) ? savedBoard.mood : initialBoard.mood,
+            paletteId: paletteOptions.some((item) => item.id === savedBoard.paletteId)
+                ? savedBoard.paletteId
+                : initialBoard.paletteId,
+            items: validItems,
         };
     } catch {
         return copyInitialBoard();
@@ -70,10 +99,23 @@ const readSavedBoards = () => {
         return saved
             .filter(
                 (item) =>
+                    item &&
                     typeof item.id === "string" &&
                     Array.isArray(item.items) &&
-                    item.items.every(isValidBoardItem),
+                    typeof item.title === "string",
             )
+            .map((item) => ({
+                ...item,
+                title: item.title.slice(0, 48),
+                brief: typeof item.brief === "string" ? item.brief.slice(0, 180) : "",
+                mood: moodOptions.includes(item.mood) ? item.mood : initialBoard.mood,
+                paletteId: paletteOptions.some((palette) => palette.id === item.paletteId)
+                    ? item.paletteId
+                    : initialBoard.paletteId,
+                items: item.items
+                    .filter(isValidBoardItem)
+                    .map(normalizeBoardItem),
+            }))
             .slice(0, maxSavedBoards);
     } catch {
         return [];
@@ -134,7 +176,7 @@ const App = () => {
             items: [
                 ...currentBoard.items,
                 {
-                    id: `note-${Date.now()}`,
+                    id: `note-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
                     type: "note",
                     size: "note",
                     text: "Add a thought, material, or small detail to remember.",
@@ -171,7 +213,7 @@ const App = () => {
                 items: [
                     ...currentBoard.items,
                     {
-                        id: `reference-${inspiration.id}-${Date.now()}`,
+                        id: `reference-${inspiration.id}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
                         type: "image",
                         inspirationId: inspiration.id,
                         size: sizes[currentBoard.items.length % sizes.length],
@@ -205,12 +247,23 @@ const App = () => {
     const handleRequestRemove = (item) => {
         const inspiration =
             item.type === "image" ? getInspirationById(item.inspirationId) : null;
-        const itemLabel = inspiration?.title ?? "note";
+        const itemIndex = board.items.findIndex((piece) => piece.id === item.id);
+        const noteNumber = board.items
+            .slice(0, itemIndex + 1)
+            .filter((piece) => piece.type === "note").length;
+        const itemLabel = inspiration?.title ?? `Note ${noteNumber}`;
 
         setConfirmation({ type: "remove-item", itemId: item.id, itemLabel });
     };
 
     const handleSaveBoard = () => {
+        if (savedBoards.length >= maxSavedBoards) {
+            setSaveMessage(
+                "You have 12 saved boards. Remove a snapshot before saving another.",
+            );
+            return;
+        }
+
         const snapshot = {
             ...board,
             id: `saved-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
@@ -218,9 +271,7 @@ const App = () => {
             items: board.items.map((item) => ({ ...item })),
         };
 
-        setSavedBoards((currentBoards) =>
-            [snapshot, ...currentBoards].slice(0, maxSavedBoards),
-        );
+        setSavedBoards((currentBoards) => [snapshot, ...currentBoards]);
         setSaveMessage(`Saved "${board.title || "Untitled board"}" to this device.`);
     };
 
@@ -398,15 +449,11 @@ const App = () => {
                         onSaveCurrent={handleSaveBoard}
                     />
 
-                    <section className={styles.placeholderSection} id="guide">
-                        <h2>Make a moodboard</h2>
-                        <p>
-                            Name the direction, collect references, add notes, then save a
-                            snapshot to this browser.
-                        </p>
-                    </section>
+                    <QuickGuide />
                 </main>
             </div>
+            <SiteFooter />
+            <BackToTop />
             <ConfirmationDialog
                 isOpen={Boolean(confirmation)}
                 title={confirmationTitle}

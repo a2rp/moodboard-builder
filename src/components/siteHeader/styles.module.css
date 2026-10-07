@@ -187,19 +187,33 @@
             display: none;
         }
 
+        .headerActions {
+            gap: 6px;
+        }
+
         .menuButton {
             display: grid;
         }
 
         .repositoryLink {
-            width: 42px;
-            padding: 0;
+            min-width: 104px;
+            padding-inline: 8px;
             justify-content: center;
 
-            span,
             svg:last-child {
                 display: none;
             }
+
+            span {
+                font-size: 10px;
+            }
+        }
+    }
+
+    @media (max-width: 390px) {
+        .brandText small {
+            font-size: 8px;
+            letter-spacing: 0.05em;
         }
     }
 }
