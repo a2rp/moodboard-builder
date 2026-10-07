@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import BoardControls from "./components/boardControls/index.jsx";
 import ConfirmationDialog from "./components/confirmationDialog/index.jsx";
+import MoodboardCanvas from "./components/moodboardCanvas/index.jsx";
 import SiteHeader from "./components/siteHeader/index.jsx";
 import { blankBoard, initialBoard } from "./data/boards.js";
 import { getInspirationById } from "./data/inspirations.js";
@@ -43,7 +44,7 @@ const readWorkingBoard = () => {
 
 const App = () => {
     const [board, setBoard] = useState(readWorkingBoard);
-    const [resetDialogOpen, setResetDialogOpen] = useState(false);
+    const [confirmation, setConfirmation] = useState(null);
     const palette = getPaletteById(board.paletteId);
 
     useEffect(() => {
@@ -75,14 +76,105 @@ const App = () => {
         }));
     };
 
-    const handleCancelReset = useCallback(() => {
-        setResetDialogOpen(false);
+    const handleNoteChange = (itemId, text) => {
+        setBoard((currentBoard) => ({
+            ...currentBoard,
+            items: currentBoard.items.map((item) =>
+                item.id === itemId ? { ...item, text } : item,
+            ),
+        }));
+    };
+
+    const handleMoveItem = (itemId, direction) => {
+        setBoard((currentBoard) => {
+            const fromIndex = currentBoard.items.findIndex((item) => item.id === itemId);
+            const toIndex = fromIndex + direction;
+
+            if (fromIndex < 0 || toIndex < 0 || toIndex >= currentBoard.items.length) {
+                return currentBoard;
+            }
+
+            const nextItems = [...currentBoard.items];
+            [nextItems[fromIndex], nextItems[toIndex]] = [
+                nextItems[toIndex],
+                nextItems[fromIndex],
+            ];
+
+            return { ...currentBoard, items: nextItems };
+        });
+    };
+
+    const handleRequestReset = () => setConfirmation({ type: "reset" });
+
+    const handleRequestRemove = (item) => {
+        const inspiration =
+            item.type === "image" ? getInspirationById(item.inspirationId) : null;
+        const itemLabel = inspiration?.title ?? "note";
+
+        setConfirmation({ type: "remove-item", itemId: item.id, itemLabel });
+    };
+
+    const handleCancelConfirmation = useCallback(() => {
+        setConfirmation(null);
     }, []);
 
-    const handleConfirmReset = useCallback(() => {
-        setBoard({ ...blankBoard, items: [] });
-        setResetDialogOpen(false);
-    }, []);
+    const handleConfirm = useCallback(() => {
+        if (!confirmation) {
+            return;
+        }
+
+        if (confirmation.type === "reset") {
+            setBoard({ ...blankBoard, items: [] });
+        } else {
+            setBoard((currentBoard) => ({
+                ...currentBoard,
+                items: currentBoard.items.filter(
+                    (item) => item.id !== confirmation.itemId,
+                ),
+            }));
+        }
+
+        setConfirmation(null);
+    }, [confirmation]);
+
+    const handleDownload = () => {
+        const exportData = {
+            title: board.title,
+            brief: board.brief,
+            mood: board.mood,
+            palette: palette.name,
+            exportedAt: new Date().toISOString(),
+            pieces: board.items.map((item) => {
+                if (item.type === "note") {
+                    return { type: "note", text: item.text };
+                }
+
+                const inspiration = getInspirationById(item.inspirationId);
+
+                return {
+                    type: "image",
+                    title: inspiration?.title ?? "Reference",
+                    category: inspiration?.category ?? "",
+                    image: inspiration?.src ?? "",
+                };
+            }),
+        };
+        const file = new Blob([JSON.stringify(exportData, null, 2)], {
+            type: "application/json;charset=utf-8",
+        });
+        const fileUrl = URL.createObjectURL(file);
+        const link = document.createElement("a");
+        const fileName =
+            board.title.trim().replace(/[^a-z0-9]+/gi, "-").toLowerCase() ||
+            "moodboard";
+
+        link.href = fileUrl;
+        link.download = `${fileName}-board.json`;
+        link.click();
+        window.setTimeout(() => URL.revokeObjectURL(fileUrl), 1000);
+    };
+
+    const confirmationIsReset = confirmation?.type === "reset";
 
     return (
         <div
@@ -110,7 +202,7 @@ const App = () => {
                             handleFieldChange("paletteId", paletteId)
                         }
                         onAddNote={handleAddNote}
-                        onRequestReset={() => setResetDialogOpen(true)}
+                        onRequestReset={handleRequestReset}
                     />
                 </aside>
 
@@ -126,13 +218,15 @@ const App = () => {
                         <span className={styles.moodBadge}>{board.mood}</span>
                     </section>
 
-                    <section className={styles.placeholderSection}>
-                        <h2>Your canvas</h2>
-                        <p>
-                            {board.items.length} pieces gathered so far. Add a note from the
-                            brief panel as you shape the direction.
-                        </p>
-                    </section>
+                    <MoodboardCanvas
+                        board={board}
+                        palette={palette}
+                        onAddNote={handleAddNote}
+                        onDownload={handleDownload}
+                        onNoteChange={handleNoteChange}
+                        onMove={handleMoveItem}
+                        onRequestRemove={handleRequestRemove}
+                    />
 
                     <section
                         className={styles.placeholderSection}
@@ -160,12 +254,20 @@ const App = () => {
                 </main>
             </div>
             <ConfirmationDialog
-                isOpen={resetDialogOpen}
-                title="Start a new board?"
-                description="This clears the working board, including its images and notes. Saved snapshots will stay available."
-                confirmLabel="Start new board"
-                onCancel={handleCancelReset}
-                onConfirm={handleConfirmReset}
+                isOpen={Boolean(confirmation)}
+                title={
+                    confirmationIsReset
+                        ? "Start a new board?"
+                        : "Remove this piece?"
+                }
+                description={
+                    confirmationIsReset
+                        ? "This clears the working board, including its images and notes. Saved snapshots will stay available."
+                        : `Remove “${confirmation?.itemLabel}” from this board? This will not change your saved snapshots.`
+                }
+                confirmLabel={confirmationIsReset ? "Start new board" : "Remove piece"}
+                onCancel={handleCancelConfirmation}
+                onConfirm={handleConfirm}
             />
         </div>
     );

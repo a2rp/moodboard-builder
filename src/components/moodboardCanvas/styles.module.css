@@ -1,0 +1,267 @@
+.moodboardCanvas {
+    margin-bottom: 48px;
+    scroll-margin-top: 100px;
+
+    .canvasHeading {
+        display: flex;
+        margin-bottom: 15px;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+
+        h2 {
+            font-family: var(--font-serif);
+            font-size: 25px;
+            letter-spacing: -0.035em;
+        }
+
+        p {
+            margin-top: 4px;
+            color: var(--ink-muted);
+            font-size: 12px;
+        }
+    }
+
+    .canvasActions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 7px;
+
+        button {
+            display: inline-flex;
+            min-height: 36px;
+            padding: 0 10px;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid var(--border-strong);
+            border-radius: 7px;
+            background: var(--paper);
+            color: var(--ink);
+            font-size: 10px;
+            font-weight: 750;
+            transition: border-color 150ms ease, box-shadow 150ms ease;
+
+            svg {
+                width: 14px;
+                height: 14px;
+            }
+
+            &:hover,
+            &:focus-visible {
+                border-color: var(--sage);
+                box-shadow: 0 0 0 3px rgb(69 107 92 / 10%);
+            }
+        }
+
+        .downloadButton {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: white;
+
+            &:hover,
+            &:focus-visible {
+                border-color: var(--accent-dark);
+                box-shadow: 0 0 0 3px var(--accent-soft);
+            }
+        }
+    }
+
+    .pieceCount {
+        margin-right: 4px;
+        color: var(--ink-muted);
+        font-size: 10px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .canvasFrame {
+        padding: 15px;
+        border: 1px solid var(--canvas-border);
+        border-radius: 11px;
+        background-color: var(--canvas-background);
+        background-image: radial-gradient(rgb(69 107 92 / 10%) 0.75px, transparent 0.75px);
+        background-size: 14px 14px;
+        box-shadow: var(--shadow);
+    }
+
+    .canvasTopline {
+        display: flex;
+        min-height: 52px;
+        margin-bottom: 12px;
+        padding: 0 3px 12px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        border-bottom: 1px solid var(--canvas-border);
+    }
+
+    .canvasTitle {
+        display: flex;
+        min-width: 0;
+        align-items: center;
+        gap: 9px;
+
+        strong,
+        span:not(.canvasMark) {
+            display: block;
+        }
+
+        strong {
+            overflow: hidden;
+            color: var(--canvas-ink);
+            font-family: var(--font-serif);
+            font-size: 15px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        span:not(.canvasMark) {
+            color: var(--canvas-muted);
+            font-size: 9px;
+        }
+    }
+
+    .canvasMark {
+        display: grid;
+        width: 31px;
+        height: 31px;
+        flex: 0 0 auto;
+        place-items: center;
+        border-radius: 8px;
+        background: var(--canvas-paper);
+        color: var(--canvas-accent-dark);
+
+        svg {
+            width: 16px;
+            height: 16px;
+        }
+    }
+
+    .colorStory {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: var(--canvas-muted);
+        font-size: 9px;
+        white-space: nowrap;
+
+        span:not(:last-child) {
+            width: 13px;
+            height: 13px;
+            border: 1px solid rgb(33 44 42 / 14%);
+            border-radius: 50%;
+        }
+
+        span:last-child {
+            margin-left: 3px;
+        }
+    }
+
+    .canvasGrid {
+        display: grid;
+        grid-auto-flow: dense;
+        grid-auto-rows: minmax(138px, 1fr);
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .emptyCanvas {
+        display: grid;
+        min-height: 310px;
+        padding: 32px;
+        justify-items: center;
+        align-content: center;
+        border: 1px dashed var(--canvas-border);
+        border-radius: 8px;
+        background: var(--canvas-paper);
+        text-align: center;
+
+        > svg {
+            width: 27px;
+            height: 27px;
+            color: var(--canvas-accent);
+        }
+
+        h3 {
+            margin-top: 12px;
+            color: var(--canvas-ink);
+            font-family: var(--font-serif);
+            font-size: 21px;
+        }
+
+        p {
+            max-width: 340px;
+            margin-top: 5px;
+            color: var(--canvas-muted);
+            font-size: 12px;
+        }
+
+        button {
+            min-height: 38px;
+            margin-top: 16px;
+            padding-inline: 12px;
+            border: 1px solid var(--canvas-accent);
+            border-radius: 7px;
+            background: var(--canvas-accent);
+            color: white;
+            font-size: 11px;
+            font-weight: 750;
+        }
+    }
+
+    .canvasFooter {
+        display: flex;
+        padding: 12px 3px 1px;
+        justify-content: space-between;
+        gap: 10px;
+        color: var(--canvas-muted);
+        font-family: var(--font-mono);
+        font-size: 9px;
+    }
+
+    @media (max-width: 900px) {
+        .canvasGrid {
+            grid-template-columns: repeat(8, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 700px) {
+        .canvasHeading {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .canvasActions {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .canvasFrame {
+            padding: 10px;
+        }
+
+        .canvasGrid {
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 7px;
+        }
+
+        .canvasTopline {
+            align-items: flex-start;
+        }
+
+        .colorStory {
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .colorStory span:last-child {
+            display: none;
+        }
+
+        .canvasFooter {
+            font-size: 8px;
+        }
+    }
+}
