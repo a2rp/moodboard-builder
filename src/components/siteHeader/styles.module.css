@@ -67,14 +67,15 @@
             min-height: 42px;
             align-items: center;
             gap: 7px;
+            border-bottom: 2px solid transparent;
             color: var(--ink-muted);
             font-size: 13px;
             font-weight: 650;
-            transition: color 150ms ease;
+            transition: border-color 150ms ease;
 
             &:hover,
             &:focus-visible {
-                color: var(--ink);
+                border-color: var(--accent);
             }
         }
     }
@@ -174,11 +175,13 @@
             a {
                 min-height: 46px;
                 padding-inline: 12px;
+                border: 1px solid transparent;
                 border-radius: 7px;
 
                 &:hover,
                 &:focus-visible {
-                    background: var(--surface-muted);
+                    border-color: var(--sage);
+                    box-shadow: 0 0 0 2px rgb(69 107 92 / 9%);
                 }
             }
         }

@@ -62,14 +62,15 @@
             min-height: 29px;
             align-items: center;
             gap: 6px;
+            border-bottom: 1px solid transparent;
             color: var(--ink-muted);
             font-size: 10px;
             font-weight: 650;
-            transition: color 140ms ease;
+            transition: border-color 140ms ease;
 
             &:hover,
             &:focus-visible {
-                color: var(--accent-dark);
+                border-color: var(--accent-dark);
             }
 
             svg {

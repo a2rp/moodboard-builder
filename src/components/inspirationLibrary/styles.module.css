@@ -84,15 +84,16 @@
             height: 28px;
             flex: 0 0 auto;
             place-items: center;
-            border: 0;
+            border: 1px solid transparent;
             border-radius: 5px;
             background: transparent;
             color: var(--ink-muted);
+            transition: border-color 140ms ease, box-shadow 140ms ease;
 
             &:hover,
             &:focus-visible {
-                background: var(--surface-muted);
-                color: var(--ink);
+                border-color: var(--border-strong);
+                box-shadow: 0 0 0 2px rgb(69 107 92 / 9%);
             }
 
             svg {
