@@ -1,10 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import BoardControls from "./components/boardControls/index.jsx";
 import ConfirmationDialog from "./components/confirmationDialog/index.jsx";
+import InspirationLibrary from "./components/inspirationLibrary/index.jsx";
 import MoodboardCanvas from "./components/moodboardCanvas/index.jsx";
 import SiteHeader from "./components/siteHeader/index.jsx";
 import { blankBoard, initialBoard } from "./data/boards.js";
-import { getInspirationById } from "./data/inspirations.js";
+import {
+    categoryOptions,
+    getInspirationById,
+    inspirations,
+} from "./data/inspirations.js";
 import { getPaletteById } from "./data/palettes.js";
 import styles from "./App.module.css";
 
@@ -45,7 +50,24 @@ const readWorkingBoard = () => {
 const App = () => {
     const [board, setBoard] = useState(readWorkingBoard);
     const [confirmation, setConfirmation] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [category, setCategory] = useState(categoryOptions[0]);
     const palette = getPaletteById(board.paletteId);
+    const searchWords = searchTerm.trim().toLowerCase();
+    const filteredInspirations = inspirations.filter((item) => {
+        const matchesCategory =
+            category === categoryOptions[0] || item.category === category;
+        const searchContent = [item.title, item.category, item.mood, ...item.keywords]
+            .join(" ")
+            .toLowerCase();
+
+        return matchesCategory && (!searchWords || searchContent.includes(searchWords));
+    });
+    const addedIds = new Set(
+        board.items
+            .filter((item) => item.type === "image")
+            .map((item) => item.inspirationId),
+    );
 
     useEffect(() => {
         try {
@@ -83,6 +105,35 @@ const App = () => {
                 item.id === itemId ? { ...item, text } : item,
             ),
         }));
+    };
+
+    const handleAddInspiration = (inspiration) => {
+        setBoard((currentBoard) => {
+            const alreadyAdded = currentBoard.items.some(
+                (item) =>
+                    item.type === "image" &&
+                    item.inspirationId === inspiration.id,
+            );
+
+            if (alreadyAdded) {
+                return currentBoard;
+            }
+
+            const sizes = ["small", "wide", "medium"];
+
+            return {
+                ...currentBoard,
+                items: [
+                    ...currentBoard.items,
+                    {
+                        id: `reference-${inspiration.id}-${Date.now()}`,
+                        type: "image",
+                        inspirationId: inspiration.id,
+                        size: sizes[currentBoard.items.length % sizes.length],
+                    },
+                ],
+            };
+        });
     };
 
     const handleMoveItem = (itemId, direction) => {
@@ -228,16 +279,15 @@ const App = () => {
                         onRequestRemove={handleRequestRemove}
                     />
 
-                    <section
-                        className={styles.placeholderSection}
-                        id="inspiration"
-                    >
-                        <h2>Find a starting point</h2>
-                        <p>
-                            A curated local photo library will help you collect a visual
-                            direction.
-                        </p>
-                    </section>
+                    <InspirationLibrary
+                        inspirations={filteredInspirations}
+                        searchTerm={searchTerm}
+                        category={category}
+                        addedIds={addedIds}
+                        onSearchChange={setSearchTerm}
+                        onCategoryChange={setCategory}
+                        onAdd={handleAddInspiration}
+                    />
 
                     <section className={styles.placeholderSection} id="saved">
                         <h2>Saved boards</h2>
