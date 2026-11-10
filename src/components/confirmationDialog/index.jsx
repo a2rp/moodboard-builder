@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { LuTriangleAlert, LuX } from "react-icons/lu";
 import styles from "./styles.module.css";
 
@@ -7,10 +8,12 @@ const ConfirmationDialog = ({
     title,
     description,
     confirmLabel = "Confirm",
+    fallbackFocusId,
     onCancel,
     onConfirm,
 }) => {
     const cancelButtonRef = useRef(null);
+    const dialogRef = useRef(null);
 
     useEffect(() => {
         if (!isOpen) {
@@ -18,6 +21,17 @@ const ConfirmationDialog = ({
         }
 
         const previousFocus = document.activeElement;
+        const appRoot = document.getElementById("root");
+        const previousAriaHidden = appRoot?.getAttribute("aria-hidden");
+        const previousInert = appRoot?.hasAttribute("inert") ?? false;
+        const previousBodyOverflow = document.body.style.overflow;
+
+        if (appRoot) {
+            appRoot.setAttribute("inert", "");
+            appRoot.setAttribute("aria-hidden", "true");
+        }
+
+        document.body.style.overflow = "hidden";
         cancelButtonRef.current?.focus();
 
         const handleKeyDown = (event) => {
@@ -28,20 +42,36 @@ const ConfirmationDialog = ({
             }
 
             if (event.key === "Tab") {
-                const dialog =
-                    event.currentTarget.querySelector("[role='dialog']");
-                const focusable = dialog?.querySelectorAll(
-                    "button:not(:disabled)",
+                const dialog = dialogRef.current;
+                const focusable = Array.from(
+                    dialog?.querySelectorAll(
+                        "a[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex='-1'])",
+                    ) ?? [],
+                ).filter(
+                    (element) =>
+                        !element.hasAttribute("hidden") &&
+                        element.getClientRects().length > 0,
                 );
                 const first = focusable?.[0];
                 const last = focusable?.[focusable.length - 1];
 
-                if (event.shiftKey && document.activeElement === first) {
+                if (!first || !last) {
                     event.preventDefault();
-                    last?.focus();
-                } else if (!event.shiftKey && document.activeElement === last) {
+                    dialog?.focus();
+                } else if (
+                    event.shiftKey &&
+                    (document.activeElement === first ||
+                        !dialog.contains(document.activeElement))
+                ) {
                     event.preventDefault();
-                    first?.focus();
+                    last.focus();
+                } else if (
+                    !event.shiftKey &&
+                    (document.activeElement === last ||
+                        !dialog.contains(document.activeElement))
+                ) {
+                    event.preventDefault();
+                    first.focus();
                 }
             }
         };
@@ -49,15 +79,33 @@ const ConfirmationDialog = ({
         document.addEventListener("keydown", handleKeyDown);
         return () => {
             document.removeEventListener("keydown", handleKeyDown);
-            previousFocus?.focus?.();
+            document.body.style.overflow = previousBodyOverflow;
+
+            if (appRoot) {
+                if (!previousInert) {
+                    appRoot.removeAttribute("inert");
+                }
+
+                if (previousAriaHidden === null) {
+                    appRoot.removeAttribute("aria-hidden");
+                } else {
+                    appRoot.setAttribute("aria-hidden", previousAriaHidden);
+                }
+            }
+
+            if (previousFocus?.isConnected) {
+                previousFocus.focus?.();
+            } else {
+                document.getElementById(fallbackFocusId)?.focus?.();
+            }
         };
-    }, [isOpen, onCancel]);
+    }, [fallbackFocusId, isOpen, onCancel]);
 
     if (!isOpen) {
         return null;
     }
 
-    return (
+    return createPortal(
         <div
             className={styles.dialogOverlay}
             onMouseDown={(event) => {
@@ -68,10 +116,12 @@ const ConfirmationDialog = ({
         >
             <section
                 className={styles.dialog}
+                ref={dialogRef}
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="confirmation-title"
                 aria-describedby="confirmation-description"
+                tabIndex={-1}
             >
                 <button
                     className={styles.closeButton}
@@ -104,7 +154,8 @@ const ConfirmationDialog = ({
                     </button>
                 </div>
             </section>
-        </div>
+        </div>,
+        document.body,
     );
 };
 

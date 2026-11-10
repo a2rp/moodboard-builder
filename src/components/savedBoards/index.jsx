@@ -22,7 +22,9 @@ const SavedBoards = ({ items, onRestore, onRequestRemove, onSaveCurrent }) => (
     >
         <div className={styles.savedHeading}>
             <div>
-                <h2 id="saved-title">Saved boards</h2>
+                <h2 id="saved-title" tabIndex={-1}>
+                    Saved boards
+                </h2>
                 <p>Snapshots stay on this device. Keep up to 12 directions.</p>
             </div>
             <span className={styles.savedCount}>{items.length} / 12 saved</span>

@@ -406,6 +406,9 @@ const App = () => {
 
     const confirmationIsReset = confirmation?.type === "reset";
     const confirmationIsSavedRemoval = confirmation?.type === "remove-saved";
+    const confirmationFallbackId = confirmationIsSavedRemoval
+        ? "saved-title"
+        : "canvas-title";
     const confirmationTitle = confirmationIsReset
         ? "Start a new board?"
         : confirmationIsSavedRemoval
@@ -506,6 +509,7 @@ const App = () => {
                 title={confirmationTitle}
                 description={confirmationDescription}
                 confirmLabel={confirmationLabel}
+                fallbackFocusId={confirmationFallbackId}
                 onCancel={handleCancelConfirmation}
                 onConfirm={handleConfirm}
             />

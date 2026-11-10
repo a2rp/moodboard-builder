@@ -27,7 +27,9 @@ const MoodboardCanvas = ({
         >
             <div className={styles.canvasHeading}>
                 <div>
-                    <h2 id="canvas-title">Your canvas</h2>
+                    <h2 id="canvas-title" tabIndex={-1}>
+                        Your canvas
+                    </h2>
                     <p>
                         Gather the references that make the direction feel
                         clear.
